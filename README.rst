@@ -1,5 +1,7 @@
 Flask-Storm
 ===========
+|test-status| |documentation-status| |pypi-version|
+
 Flask-Storm is an extension for `Flask <https://www.palletsprojects.com/p/flask/>`_ that adds support for Canonical's ORM `Storm <https://storm.canonical.com/>`_ to your application. Flask-Storm automatically opens and closes database connections on demand when requests need them.
 
 
@@ -35,14 +37,26 @@ Installation
 
 Documentation
 -------------
-To use Flask Storm the application must set the `STORM_DATABASE_URI` configuration variable to a `valid database URI <https://storm.canonical.com/Manual#Databases>`_.
+Documentation is available on `<http://flask-storm.readthedocs.io/>`_
 
 
 Why not Python 3
 ----------------
 Sadly Storm is not Python 3 compatible. Flask Storm however should be compatible once Storm is.
 
+https://travis-ci.org/runfalk/.svg
 
-Planned expansions
-------------------
-adsf
+.. |test-status| image:: https://travis-ci.org/runfalk/Flask-Storm.svg
+    :alt: Test status
+    :scale: 100%
+    :target: https://travis-ci.org/runfalk/Flask-Storm
+
+.. |documentation-status| image:: https://readthedocs.org/projects/Flask-Storm/badge/
+    :alt: Documentation status
+    :scale: 100%
+    :target: http://flask-storm.readthedocs.io/
+
+.. |pypi-version| image:: https://badge.fury.io/py/Flask-Storm.svg
+    :alt: PyPI version status
+    :scale: 100%
+    :target: https://pypi.python.org/pypi/Flask-Storm/

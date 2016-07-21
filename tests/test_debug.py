@@ -138,7 +138,7 @@ def test_query_error():
 @require_sqlparse
 @require("app_context", "flask_storm")
 def test_shell_tracer():
-    sql = "SELECT 1 + 1 FROM (VALUES (1, 2), (2, 3))"
+    sql = "SELECT 1 + 1 FROM (SELECT 2 + 2)"
 
     output = StringIO()
     output.isatty = MagicMock(return_value=True)

@@ -1,0 +1,10 @@
+*.db
+*.pyc
+*.pyo
+.cache/
+.coverage
+.DS_Store
+.eggs/
+Flask_Storm.egg-info/
+venv/
+doc/_build/

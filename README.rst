@@ -42,9 +42,7 @@ Documentation is available on `<http://flask-storm.readthedocs.io/>`_
 
 Why not Python 3
 ----------------
-Sadly Storm is not Python 3 compatible. Flask Storm however should be compatible once Storm is.
-
-https://travis-ci.org/runfalk/.svg
+Sadly Storm is not Python 3 compatible, which is why it doesn't make sense to make Flask-Storm compatible yet.
 
 .. |test-status| image:: https://travis-ci.org/runfalk/Flask-Storm.svg
     :alt: Test status

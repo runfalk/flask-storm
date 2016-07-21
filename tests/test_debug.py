@@ -14,6 +14,13 @@ try:
 except ImportError:
     from StringIO import StringIO
 
+# Enable skipping of tests that do not run without sqlparse being installed
+try:
+    import sqlparse
+except ImportError:
+    sqlparse = None
+
+require_sqlparse = pytest.mark.skipif(not sqlparse, reason="requires sqlparse")
 
 require = pytest.mark.usefixtures
 
@@ -128,6 +135,7 @@ def test_query_error():
     assert queries[0].statement == "SELECT !"
 
 
+@require_sqlparse
 @require("app_context", "flask_storm")
 def test_shell_tracer():
     sql = "SELECT 1 + 1 FROM (VALUES (1, 2), (2, 3))"

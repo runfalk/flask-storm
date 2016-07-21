@@ -10,6 +10,11 @@ from werkzeug.local import Local
 from .sql import Adapter, replace_placeholders, format as format_sql, color as color_sql
 from .utils import has_color_support, colored
 
+try:
+    import sqlparse
+except ImportError:
+    sqlparse = None
+
 
 __all__ = [
     "DebugTracer",
@@ -158,8 +163,11 @@ class ShellTracer(object):
         # skew the time
         self.threadinfo.start_time = datetime.now()
 
-        self._log(format_sql(
-            replace_placeholders(statement, params, Adapter(connection))))
+        if sqlparse is None:
+            self._log(u"{}\n{!r}".format(statement, params))
+        else:
+            self._log(format_sql(
+                replace_placeholders(statement, params, Adapter(connection))))
 
     def connection_raw_execute_success(
             self, connection, raw_cursor, statement, params):

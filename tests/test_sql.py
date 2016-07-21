@@ -6,6 +6,14 @@ from datetime import date
 from flask_storm.sql import default_adapter, replace_placeholders, format, color
 from mock import patch
 
+# Enable skipping of tests that do not run without sqlparse being installed
+try:
+    import sqlparse
+except ImportError:
+    sqlparse = None
+
+require_sqlparse = pytest.mark.skipif(not sqlparse, reason="requires sqlparse")
+
 
 def remove_whitespace(string):
     return re.sub(r"\s+", "", string)
@@ -63,15 +71,18 @@ def test_adapter_date():
     d = date.today()
     assert default_adapter.adapt(d) == default_adapter.adapt(str(d))
 
+@require_sqlparse
 def test_replace_placeholders():
     assert replace_placeholders("SELECT ? + ?", [1, 2]) == "SELECT 1 + 2"
     assert replace_placeholders("SELECT ?  +  ?", [1, 2]) == "SELECT 1  +  2"
 
 
+@require_sqlparse
 def test_replace_placeholders_exausted_params():
     with pytest.raises(ValueError):
         replace_placeholders("SELECT ?", [])
 
+@require_sqlparse
 def test_format():
     sql = "SELECT * FROM test t WHERE t.id > 10"
     fsql = format(sql)
@@ -85,7 +96,7 @@ def test_format_no_sqlparse():
     with patch("flask_storm.sql.sqlparse", None):
         assert sql == format(sql)
 
-
+@require_sqlparse
 def test_color():
     sql = """
         SELECT *

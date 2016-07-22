@@ -1,0 +1,10 @@
+include Makefile LICENSE README.rst requirements.txt example.py
+
+graft tests
+graft example.py
+graft doc
+
+global-exclude *.py[co]
+
+prune docs/_build
+prune docs/_themes

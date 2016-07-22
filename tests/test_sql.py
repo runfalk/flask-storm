@@ -1,5 +1,4 @@
 import pytest
-import re
 import sys
 
 from datetime import date
@@ -13,27 +12,6 @@ except ImportError:
     sqlparse = None
 
 require_sqlparse = pytest.mark.skipif(not sqlparse, reason="requires sqlparse")
-
-
-def remove_whitespace(string):
-    return re.sub(r"\s+", "", string)
-
-
-def remove_ansi(string):
-    return re.sub(r"\x1b\[[^m]+m", "", string)
-
-
-def test_remove_whitespace():
-    assert remove_whitespace("foo  bar") == "foobar"
-    assert remove_whitespace("foo\t\tbar") == "foobar"
-    assert remove_whitespace("foo\n\nbar") == "foobar"
-    assert remove_whitespace("foo\r\rbar") == "foobar"
-    assert remove_whitespace("foo\r\nbar") == "foobar"
-
-
-def test_remove_ansi():
-    assert remove_ansi("foo\x1b[0mbar") == "foobar"
-    assert remove_ansi("foo\x1b[0bar") == "foo\x1b[0bar"
 
 
 def test_adapter_type():
@@ -88,7 +66,9 @@ def test_format():
     fsql = format(sql)
 
     assert fsql != sql
-    assert remove_whitespace(fsql) == remove_whitespace(sql)
+    assert \
+        pytest.helpers.remove_whitespace(fsql) == \
+        pytest.helpers.remove_whitespace(sql)
 
 
 def test_format_no_sqlparse():
@@ -107,7 +87,7 @@ def test_color():
     csql = color(sql)
 
     assert csql != sql
-    assert remove_ansi(csql) == sql
+    assert pytest.helpers.remove_ansi(csql) == sql
 
 
 def test_color_no_sqlparse():

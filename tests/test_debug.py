@@ -25,14 +25,6 @@ require_sqlparse = pytest.mark.skipif(not sqlparse, reason="requires sqlparse")
 require = pytest.mark.usefixtures
 
 
-def remove_whitespace(string):
-    return re.sub(r"\s+", "", string)
-
-
-def remove_ansi(string):
-    return re.sub(r"\x1b\[[^m]+m", "", string)
-
-
 @require("app", "flask_storm", "app_context")
 def test_get_debug_queries():
     with DebugTracer():
@@ -138,6 +130,10 @@ def test_query_error():
 @require_sqlparse
 @require("app_context", "flask_storm")
 def test_shell_tracer():
+    # Alias helper functions
+    remove_whitespace = pytest.helpers.remove_whitespace
+    remove_ansi = pytest.helpers.remove_ansi
+
     sql = "SELECT 1 + 1 FROM (SELECT 2 + 2)"
 
     output = StringIO()

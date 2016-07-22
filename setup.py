@@ -125,6 +125,7 @@ if __name__ == "__main__":
                 "mock",
                 "pytest",
                 "pytest-cov",
+                "pytest-helpers-namespace",
                 "sphinx",
             ],
             "fancy": [

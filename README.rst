@@ -32,8 +32,13 @@ Installation
 
 .. code-block:: bash
 
-    $ pip install flask_storm
+    $ pip install flask_storm[fancy]
 
+This installs Flask-Storm with SQL highlighting and reformatting support. If you do not want this drop the ``fancy``.
+
+.. code-block:: bash
+
+    $ pip install flask_storm
 
 Documentation
 -------------
@@ -58,3 +63,7 @@ Sadly Storm is not Python 3 compatible, which is why it doesn't make sense to ma
     :alt: PyPI version status
     :scale: 100%
     :target: https://pypi.python.org/pypi/Flask-Storm/
+
+.. Include changelog on PyPI
+
+.. include:: doc/changelog.rst

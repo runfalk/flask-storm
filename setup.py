@@ -123,7 +123,7 @@ if __name__ == "__main__":
         extras_require={
             "dev": [
                 "mock",
-                "pytest",
+                "pytest>=3",
                 "pytest-cov",
                 "pytest-helpers-namespace",
                 "sphinx",

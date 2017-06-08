@@ -8,3 +8,5 @@
 Flask_Storm.egg-info/
 venv/
 doc/_build/
+build/
+dist/

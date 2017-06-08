@@ -100,7 +100,7 @@ def _color_token(token):
         return colored(token.value, 39)
     elif token.ttype in Token.Operator:
         return colored(token.value, 154)
-    elif token.is_group():
+    elif token.is_group:
         return "".join(_color_token(t) for t in token.tokens)
     return token.value
 

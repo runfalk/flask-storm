@@ -49,12 +49,12 @@ Why not Python 3
 ----------------
 Sadly Storm is not Python 3 compatible, which is why it doesn't make sense to make Flask-Storm compatible yet.
 
-.. |test-status| image:: https://travis-ci.org/runfalk/Flask-Storm.svg
+.. |test-status| image:: https://travis-ci.org/runfalk/flask-storm.svg
     :alt: Test status
     :scale: 100%
     :target: https://travis-ci.org/runfalk/Flask-Storm
 
-.. |documentation-status| image:: https://readthedocs.org/projects/Flask-Storm/badge/
+.. |documentation-status| image:: https://readthedocs.org/projects/flask-storm/badge/
     :alt: Documentation status
     :scale: 100%
     :target: http://flask-storm.readthedocs.io/

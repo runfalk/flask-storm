@@ -5,16 +5,16 @@ explicitly stated, changes are made by
 `Andreas Runfalk <https://github.com/runfalk>`_.
 
 
-Version 0.1.1
+Version 0.1.2
 -------------
-Released on <unreleased>
+Released on 14th June 2017
 
 - Fixed an issue with query logging in ``flask shell`` and PostgreSQL
 
 
 Version 0.1.1
 -------------
-Released on 9th July 2017
+Released on 9th June 2017
 
 - Fixed issue with new versions of sqlparse by bumping its version requirement
 

@@ -1,4 +1,5 @@
 from storm.databases.postgres import PostgresConnection
+from storm.variables import Variable
 
 try:
     import sqlparse
@@ -42,9 +43,13 @@ class Adapter(object):
             return self._default_adapt(str(value))
 
     def adapt(self, value):
+        if isinstance(value, Variable):
+            value = value.get(to_db=True)
+
         if self.type == "postgres":
             output = psycopg2_adapt(value)
-            output.prepare(conn._raw_connection)
+            if hasattr(output, "prepare"):
+                output.prepare(self._conn._raw_connection)
             return output.getquoted()
 
         return self._default_adapt(value)

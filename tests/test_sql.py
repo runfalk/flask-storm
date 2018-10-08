@@ -2,6 +2,7 @@ import pytest
 import sys
 
 from datetime import date
+from flask_storm._compat import bstr, max_int, ustr
 from flask_storm.sql import default_adapter, replace_placeholders, format, color
 from mock import patch
 
@@ -14,6 +15,13 @@ except ImportError:
 require_sqlparse = pytest.mark.skipif(not sqlparse, reason="requires sqlparse")
 
 
+def to_ustr(s):
+    """Helper function to ensure string is unicode."""
+    if isinstance(s, bstr):
+        return s.decode("utf8")
+    return s
+
+
 def test_adapter_type():
     assert default_adapter.type is None
 
@@ -21,7 +29,7 @@ def test_adapter_type():
 def test_adapter_str():
     assert default_adapter.adapt(u"foobar") == u"'foobar'"
     assert default_adapter.adapt(u"foo'bar") == u"'foo''bar'"
-    assert default_adapter.adapt(ur"foo\'bar") == ur"'foo\\''bar'"
+    assert default_adapter.adapt(to_ustr(r"foo\'bar")) == to_ustr(r"'foo\\''bar'")
 
 
 def test_adapter_bool():
@@ -35,10 +43,10 @@ def test_adapter_none():
 
 def test_adapter_int():
     assert default_adapter.adapt(42) == u"42"
-    assert default_adapter.adapt(sys.maxint) == str(sys.maxint)
+    assert default_adapter.adapt(max_int) == str(max_int)
 
     # Trigger long type
-    assert default_adapter.adapt(sys.maxint + 1) == str(sys.maxint + 1)
+    assert default_adapter.adapt(max_int + 1) == str(max_int + 1)
 
 
 def test_adapter_float():

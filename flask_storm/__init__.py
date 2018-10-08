@@ -7,7 +7,7 @@ from .utils import find_flask_storm, create_context_local
 logger = getLogger(__name__)
 logger.addHandler(NullHandler())
 
-__version__ = "0.1.2"
+__version__ = "0.2.0"
 
 __all__ = [
     "create_context_local",

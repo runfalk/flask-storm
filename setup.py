@@ -117,8 +117,9 @@ if __name__ == "__main__":
         packages=["flask_storm"],
         platforms="any",
         install_requires=[
+            # We don't specify storm here since we might want storm-legacy
+            # instead.
             "Flask",
-            "storm"
         ],
         extras_require={
             "dev": [
@@ -137,8 +138,12 @@ if __name__ == "__main__":
             "Framework :: Flask",
             "Intended Audience :: Developers",
             "License :: OSI Approved :: MIT License",
-            "Programming Language :: Python",
-            "Programming Language :: Python :: 2",
+            "Programming Language :: Python :: 2.7",
+            "Programming Language :: Python :: 3.3",
+            "Programming Language :: Python :: 3.4",
+            "Programming Language :: Python :: 3.5",
+            "Programming Language :: Python :: 3.6",
+            "Programming Language :: Python :: 3.7",
             "Topic :: Database",
             "Topic :: Utilities",
             "Topic :: Software Development :: Libraries",

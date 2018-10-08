@@ -11,7 +11,9 @@ try:
 except ImportError:
     psycopg2_adapt = None
 
+from ._compat import base_string, long_int
 from .utils import colored
+
 
 __all__ = [
     "Adapter",
@@ -20,6 +22,7 @@ __all__ = [
     "format",
     "color",
 ]
+
 
 class Adapter(object):
     def __init__(self, conn=None):
@@ -31,13 +34,13 @@ class Adapter(object):
             return "postgres"
 
     def _default_adapt(self, value):
-        if isinstance(value, (str, unicode)):
+        if isinstance(value, base_string):
             return "'{}'".format(value.replace("'", "''").replace("\\", "\\\\"))
         elif isinstance(value, bool):
             return "TRUE" if value else "FALSE"
         elif value is None:
             return "NULL"
-        elif isinstance(value, (int, long, float)):
+        elif isinstance(value, (int, long_int, float)):
             return str(value)
         else:
             return self._default_adapt(str(value))
@@ -67,7 +70,7 @@ def replace_placeholders(statement, params, adapter=None):
     try:
         for token in sqlparse.parse(statement)[0].flatten():
             if str(token.ttype) == "Token.Name.Placeholder":
-                tokens.append(param_iter.next())
+                tokens.append(next(param_iter))
             else:
                 tokens.append(token.value)
     except StopIteration:

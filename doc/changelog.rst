@@ -5,6 +5,14 @@ explicitly stated, changes are made by
 `Andreas Runfalk <https://github.com/runfalk>`_.
 
 
+Version 0.2.0
+-------------
+Released on 8th October 2018
+
+- Added Python 3 support
+- Removed ``storm`` as a dependency since ``storm-legacy`` can be used as well
+
+
 Version 0.1.2
 -------------
 Released on 14th June 2017

@@ -1,7 +1,28 @@
 language: python
-python:
-    - 2.7
+cache: pip
+
+matrix:
+  include:
+    - python: 2.7
+      env: STORM_PACKAGE=storm
+    - python: 2.7
+      env: STORM_PACKAGE=storm-legacy
+    - python: 3.3
+      env: STORM_PACKAGE=storm-legacy
+    - python: 3.4
+      env: STORM_PACKAGE=storm-legacy
+    - python: 3.5
+      env: STORM_PACKAGE=storm-legacy
+    - python: 3.6
+      env: STORM_PACKAGE=storm-legacy
+    - python: 3.7
+      dist: xenial
+      sudo: true
+      env: STORM_PACKAGE=storm-legacy
+
 install:
     - pip install -r requirements.txt
+    - pip install $STORM_PACKAGE
+
 script:
     - pytest

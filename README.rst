@@ -47,10 +47,6 @@ Documentation
 Documentation is available on `<http://flask-storm.readthedocs.io/>`_
 
 
-Why not Python 3
-----------------
-Sadly Storm is not Python 3 compatible, which is why it doesn't make sense to make Flask-Storm compatible yet.
-
 .. |test-status| image:: https://travis-ci.org/runfalk/flask-storm.svg
     :alt: Test status
     :scale: 100%

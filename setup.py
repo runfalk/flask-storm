@@ -113,7 +113,7 @@ if __name__ == "__main__":
         license="MIT",
         author="Andreas Runfalk",
         author_email="andreas@runfalk.se",
-        url="https://www.github.com/runfalk/flask_storm",
+        url="https://www.github.com/runfalk/flask-storm",
         packages=["flask_storm"],
         platforms="any",
         install_requires=[

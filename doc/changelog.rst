@@ -5,6 +5,14 @@ explicitly stated, changes are made by
 `Andreas Runfalk <https://github.com/runfalk>`_.
 
 
+Version 0.3.0
+-------------
+Released on <unreleased>
+
+- Dropped support for Python 3.3
+- Support Storm 0.21 which was recently released
+
+
 Version 0.2.0
 -------------
 Released on 8th October 2018

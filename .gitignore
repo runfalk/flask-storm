@@ -5,6 +5,7 @@
 .coverage
 .DS_Store
 .eggs/
+.tox/
 Flask_Storm.egg-info/
 venv/
 doc/_build/

@@ -2,6 +2,13 @@ from storm.databases.postgres import PostgresConnection
 from storm.variables import Variable
 
 try:
+    from storm.database import ConnectionWrapper
+except ImportError:  # storm < 0.21
+    # Only used for isinstance checks.
+    class ConnectionWrapper(object):
+        pass
+
+try:
     import sqlparse
 except ImportError:
     sqlparse = None
@@ -52,8 +59,15 @@ class Adapter(object):
         if self.type == "postgres":
             output = psycopg2_adapt(value)
             if hasattr(output, "prepare"):
-                output.prepare(self._conn._raw_connection)
-            return output.getquoted()
+                raw_connection = self._conn._raw_connection
+                if isinstance(raw_connection, ConnectionWrapper):
+                    raw_connection = raw_connection._connection
+                output.prepare(raw_connection)
+            quoted = output.getquoted()
+            if not isinstance(quoted, str):
+                # getquoted returns bytes on Python 3, but we need str.
+                quoted = quoted.decode("UTF-8")
+            return quoted
 
         return self._default_adapt(value)
 

@@ -20,12 +20,8 @@ matrix:
     - python: 3.6
       env: STORM_PACKAGE=storm-legacy
     - python: 3.7
-      dist: xenial
-      sudo: true
       env: STORM_PACKAGE=storm
     - python: 3.7
-      dist: xenial
-      sudo: true
       env: STORM_PACKAGE=storm-legacy
 
 install:

@@ -11,6 +11,7 @@ Released on <unreleased>
 
 - Dropped support for Python 3.3
 - Support Storm 0.21 which was recently released
+- Document support for Python 3.8
 
 
 Version 0.2.0

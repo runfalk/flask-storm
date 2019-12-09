@@ -23,6 +23,10 @@ matrix:
       env: STORM_PACKAGE=storm
     - python: 3.7
       env: STORM_PACKAGE=storm-legacy
+    - python: 3.8
+      env: STORM_PACKAGE=storm
+    - python: 3.8
+      env: STORM_PACKAGE=storm-legacy
 
 install:
     - pip install -r requirements.txt

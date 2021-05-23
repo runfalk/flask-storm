@@ -1,6 +1,6 @@
 Documentation
 =============
-asdfasdfasfdf
+Flask-Storm is an extension for `Flask <https://www.palletsprojects.com/p/flask/>`_ that adds support for Canonical's ORM `Storm <https://storm.canonical.com/>`_ to your application. Flask-Storm automatically opens and closes database connections on demand when requests need them.
 
 
 Quickstart

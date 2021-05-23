@@ -2,8 +2,6 @@ Flask-Storm
 ===========
 |test-status| |documentation-status| |pypi-version|
 
-*I only recommend using this package if your project is already heavily invested in Storm. Instead use* `SQLAlchemy <https://github.com/zzzeek/sqlalchemy>`_ *and* `Flask-SQLAlchemy <https://github.com/mitsuhiko/flask-sqlalchemy>`_.
-
 Flask-Storm is an extension for `Flask <https://www.palletsprojects.com/p/flask/>`_ that adds support for Canonical's ORM `Storm <https://storm.canonical.com/>`_ to your application. Flask-Storm automatically opens and closes database connections on demand when requests need them.
 
 

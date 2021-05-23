@@ -11,8 +11,16 @@ Extension
 
 Context locals
 --------------
-.. automodule:: flask_storm
-   :members: store
+.. We can't use autodoc here since Sphinx tries to access the object without a
+   Flask application context
+.. py:data:: store
+   :value: Proxy for FlaskStorm.store
+
+   Shorthand for :attr:`FlaskStorm.store` which does not depend on knowing
+   the FlaskStorm instance bound to the current request context. This is the
+   prefered method of accessing the Store, since using the
+   :attr:`FlaskStorm.store` property directly makes it easy to accidentally
+   create circular imports.
 
 .. autofunction:: flask_storm.create_context_local
 

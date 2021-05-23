@@ -1,0 +1,37 @@
+name: GH Pages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  docs-deploy:
+    runs-on: ubuntu-latest
+    name: Deploy docs
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools
+          pip install -e .[dev]
+          pip install storm>=0.25
+      - name: Build documentation
+        run: |
+          sphinx-build doc/ doc-build/
+          touch doc-build/.nojekyll
+      - name: Deploy
+        uses: crazy-max/ghaction-github-pages@v1
+        with:
+          allow_empty_commit: false
+          build_dir: doc-build/
+          committer_name: Andreas Runfalk
+          committer_email: andreas@runfalk.se
+          keep_history: true
+          jekyll: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

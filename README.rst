@@ -44,7 +44,7 @@ This installs Flask-Storm with SQL highlighting and reformatting support. If you
 
 Documentation
 -------------
-Documentation is available on `<http://flask-storm.readthedocs.io/>`_
+Documentation is available on `<https://runfalk.github.io/flask-storm>`_
 
 
 .. |test-status| image:: https://travis-ci.org/runfalk/flask-storm.svg

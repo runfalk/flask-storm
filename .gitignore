@@ -8,6 +8,7 @@
 .tox/
 Flask_Storm.egg-info/
 venv/
+.venv/
 doc/_build/
 build/
 dist/

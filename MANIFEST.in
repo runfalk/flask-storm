@@ -1,4 +1,4 @@
-include Makefile LICENSE README.rst requirements.txt example.py
+include LICENSE README.rst example.py
 
 graft tests
 graft doc

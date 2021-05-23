@@ -32,17 +32,45 @@ Installation
 
 .. code-block:: bash
 
-    $ pip install flask_storm[fancy]
+    pip install flask_storm[fancy]
 
 This installs Flask-Storm with SQL highlighting and reformatting support. If you do not want this drop the ``fancy``.
 
 .. code-block:: bash
 
-    $ pip install flask_storm
+    pip install flask_storm
+
 
 Documentation
 -------------
 Documentation is available on `<https://runfalk.github.io/flask-storm>`_
+
+
+Development
+-----------
+
+.. code-block:: bash
+
+    # Setup environment
+    python3 -m venv --prompt=flask-storm .venv
+    source .venv/bin/activate
+    pip install --upgrade pip setuptools
+    pip install -e .[dev,fancy]
+
+    # Run test suite
+    pytest
+
+    # You can test all supported python versions in one go using tox
+    tox
+
+    # Build documentation
+    sphinx-build doc/ doc-build/
+
+    # Run auto formatter
+    black flask_storm/ tests/ setup.py
+
+    # Run linter
+    flake8 flask_storm/ tests/ setup.py
 
 
 .. |test-status| image:: https://github.com/runfalk/flask-storm/actions/workflows/ci.yml/badge.svg

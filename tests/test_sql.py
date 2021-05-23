@@ -1,8 +1,7 @@
 import pytest
-import sys
 
 from datetime import date
-from flask_storm._compat import bstr, max_int, ustr
+from flask_storm._compat import bstr, max_int
 from flask_storm.sql import default_adapter, replace_placeholders, format, color
 from mock import patch
 

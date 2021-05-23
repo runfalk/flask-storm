@@ -157,7 +157,6 @@ class FlaskStorm(object):
             if not hasattr(ctx, "storm_store"):
                 ctx.storm_store = {}
 
-            storm_store = ctx.storm_store
             if bind not in ctx.storm_store:
                 ctx.storm_store[bind] = self.connect(bind)
             return ctx.storm_store[bind]

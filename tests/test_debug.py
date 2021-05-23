@@ -1,12 +1,10 @@
 import pytest
-import re
 import sys
 
 from datetime import datetime, timedelta
 from flask_storm import store, FlaskStorm
 from flask_storm.debug import DebugTracer, get_debug_queries, DebugQuery, ShellTracer
 from mock import MagicMock, patch
-from storm.exceptions import OperationalError
 from threading import Thread
 
 try:

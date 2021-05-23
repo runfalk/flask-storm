@@ -1,6 +1,6 @@
 import pytest
 
-from flask import Flask, current_app
+from flask import Flask
 from flask_storm import FlaskStorm, find_flask_storm
 from mock import patch
 from storm.locals import Store

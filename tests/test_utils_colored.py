@@ -1,6 +1,3 @@
-import pytest
-import sys
-
 from flask_storm.utils import colored, has_color_support
 from mock import Mock, patch
 

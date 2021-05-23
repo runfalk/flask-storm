@@ -1,6 +1,6 @@
 Flask-Storm
 ===========
-|test-status| |documentation-status| |pypi-version|
+|test-status| |pypi-version|
 
 Flask-Storm is an extension for `Flask <https://www.palletsprojects.com/p/flask/>`_ that adds support for Canonical's ORM `Storm <https://storm.canonical.com/>`_ to your application. Flask-Storm automatically opens and closes database connections on demand when requests need them.
 
@@ -45,15 +45,10 @@ Documentation
 Documentation is available on `<https://runfalk.github.io/flask-storm>`_
 
 
-.. |test-status| image:: https://travis-ci.org/runfalk/flask-storm.svg
+.. |test-status| image:: https://github.com/runfalk/flask-storm/actions/workflows/ci.yml/badge.svg
     :alt: Test status
     :scale: 100%
     :target: https://travis-ci.org/runfalk/Flask-Storm
-
-.. |documentation-status| image:: https://readthedocs.org/projects/flask-storm/badge/
-    :alt: Documentation status
-    :scale: 100%
-    :target: http://flask-storm.readthedocs.io/
 
 .. |pypi-version| image:: https://badge.fury.io/py/Flask-Storm.svg
     :alt: PyPI version status

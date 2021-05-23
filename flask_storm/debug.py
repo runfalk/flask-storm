@@ -124,7 +124,7 @@ class ShellTracer(object):
         else:
             self.file = file
 
-        self.fancy = False
+        self.fancy = fancy
         if fancy is None:
             self.fancy = True
 

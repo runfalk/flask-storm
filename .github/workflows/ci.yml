@@ -42,3 +42,25 @@ jobs:
         run: pip install ${{ matrix.storm-package }}
       - name: Run test suite
         run: pytest
+
+  publish:
+    runs-on: ubuntu-20.04
+    needs: [lint, build]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    name: Publish
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install packaging requirements
+        run: |
+          python -m pip install --upgrade pip setuptools
+          pip install build
+      - name: Install ${{ matrix.storm-package }}
+        run: python -m build --sdist --wheel
+      - name: Publish dist/
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}

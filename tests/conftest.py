@@ -25,6 +25,7 @@ def flask_storm(app):
     flask_storm.init_app(app)
     return flask_storm
 
+
 @pytest.yield_fixture
 def app_context(app):
     with app.app_context() as ctx:

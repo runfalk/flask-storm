@@ -68,7 +68,8 @@ def has_color_support(file=None):
         file = sys.stdout
 
     supported_platform = sys.platform != "Pocket PC" and (
-        sys.platform != "win32" or "ANSICON" in os.environ)
+        sys.platform != "win32" or "ANSICON" in os.environ
+    )
     is_tty = getattr(file, "isatty", lambda: False)()
 
     return supported_platform and is_tty

@@ -25,9 +25,7 @@ def test_wrong_context():
 
 
 def test_bind_context_local(app, flask_storm):
-    app.config["STORM_BINDS"] = {
-        "extra": app.config["STORM_DATABASE_URI"]
-    }
+    app.config["STORM_BINDS"] = {"extra": app.config["STORM_DATABASE_URI"]}
 
     extra_store = create_context_local("extra")
 

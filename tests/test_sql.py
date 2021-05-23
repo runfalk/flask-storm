@@ -57,6 +57,7 @@ def test_adapter_date():
     d = date.today()
     assert default_adapter.adapt(d) == default_adapter.adapt(str(d))
 
+
 @require_sqlparse
 def test_replace_placeholders():
     assert replace_placeholders("SELECT ? + ?", [1, 2]) == "SELECT 1 + 2"
@@ -68,21 +69,23 @@ def test_replace_placeholders_exausted_params():
     with pytest.raises(ValueError):
         replace_placeholders("SELECT ?", [])
 
+
 @require_sqlparse
 def test_format():
     sql = "SELECT * FROM test t WHERE t.id > 10"
     fsql = format(sql)
 
     assert fsql != sql
-    assert \
-        pytest.helpers.remove_whitespace(fsql) == \
-        pytest.helpers.remove_whitespace(sql)
+    assert pytest.helpers.remove_whitespace(fsql) == pytest.helpers.remove_whitespace(
+        sql
+    )
 
 
 def test_format_no_sqlparse():
     sql = "SELECT * FROM test t WHERE t.id > 10"
     with patch("flask_storm.sql.sqlparse", None):
         assert sql == format(sql)
+
 
 @require_sqlparse
 def test_color():

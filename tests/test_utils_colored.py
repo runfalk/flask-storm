@@ -69,4 +69,3 @@ def test_has_color_support():
         assert not has_color_support(tty_file)
         with patch.dict("os.environ", {"ANSICON": ""}):
             assert has_color_support(tty_file)
-

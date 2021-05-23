@@ -4,6 +4,7 @@ from storm.locals import create_database, Store
 from .debug import ShellTracer
 from .utils import find_flask_storm, create_context_local
 
+
 class FlaskStorm(object):
     """
     Create a FlaskStorm instance.
@@ -55,13 +56,13 @@ class FlaskStorm(object):
                 "This FlaskStorm instance is already strictly bound to an "
                 "application. To use this instance with multiple applications "
                 "do not pass an application to the constructor and call "
-                "init_app() for every application")
+                "init_app() for every application"
+            )
 
         # Check if there is an existing FlaskStorm instance bound to this app
         flask_storm = find_flask_storm(app)
         if flask_storm is not None:
-            raise ValueError(
-                "FlaskStorm already registered for this application")
+            raise ValueError("FlaskStorm already registered for this application")
 
         # Register instance of self on the application object. This dictionary
         # has existed on the Flask class since 0.7, and we rely on the
@@ -74,6 +75,7 @@ class FlaskStorm(object):
         # prints every query to STDOUT. This function is available from version
         # 0.11 of Flask and later
         if hasattr(app, "shell_context_processor"):
+
             @app.shell_context_processor
             def shell_context():
                 tracer = ShellTracer(fancy=True)
@@ -106,7 +108,8 @@ class FlaskStorm(object):
         if None in binds:
             raise RuntimeError(
                 "There is a None key in STORM_BINDS. This is reserved for "
-                "the default store as defined by STORM_DATABASE_URI")
+                "the default store as defined by STORM_DATABASE_URI"
+            )
 
         if "STORM_DATABASE_URI" in self.app.config:
             binds[None] = self.app.config.get("STORM_DATABASE_URI")
@@ -130,7 +133,8 @@ class FlaskStorm(object):
         if bind not in binds:
             raise RuntimeError(
                 "No connection URI found in configuration. Is "
-                "STORM_DATABASE_URI defined?")
+                "STORM_DATABASE_URI defined?"
+            )
 
         return Store(create_database(binds[bind]))
 

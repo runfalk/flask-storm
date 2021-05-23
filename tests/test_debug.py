@@ -46,11 +46,7 @@ def test_get_debug_queries():
 
 
 def test_debug_query():
-    data = (
-        "SELECT 1",
-        (),
-        datetime(2000, 1, 1),
-        datetime(2000, 1, 1, second=1))
+    data = ("SELECT 1", (), datetime(2000, 1, 1), datetime(2000, 1, 1, second=1))
     dq = DebugQuery(*data)
 
     for i, value in enumerate(data):
@@ -59,10 +55,8 @@ def test_debug_query():
 
 def test_debug_query_keys():
     dq = DebugQuery(
-        "SELECT 1",
-        (),
-        datetime(2000, 1, 1),
-        datetime(2000, 1, 1, second=1))
+        "SELECT 1", (), datetime(2000, 1, 1), datetime(2000, 1, 1, second=1)
+    )
 
     assert dq.statement == "SELECT 1"
     assert dq.params == ()
@@ -146,9 +140,9 @@ def test_shell_tracer():
     output.close()
 
     assert color_output != sql
-    assert \
-        remove_whitespace(remove_ansi(color_output)).rsplit(";", 1)[0] == \
-        remove_whitespace(sql)
+    assert remove_whitespace(remove_ansi(color_output)).rsplit(";", 1)[
+        0
+    ] == remove_whitespace(sql)
 
     output = StringIO()
     output.isatty = MagicMock(return_value=False)
@@ -160,12 +154,14 @@ def test_shell_tracer():
     output.close()
 
     assert color_output != colorless_output
-    assert \
-        remove_ansi(color_output).rsplit(";", 1)[0] == \
-        colorless_output.rsplit(";", 1)[0]
-    assert \
-        remove_whitespace(remove_ansi(color_output)).rsplit(";", 1)[0] == \
-        remove_whitespace(sql)
+    assert (
+        remove_ansi(color_output).rsplit(";", 1)[0]
+        == colorless_output.rsplit(";", 1)[0]
+    )
+    assert remove_whitespace(remove_ansi(color_output)).rsplit(";", 1)[
+        0
+    ] == remove_whitespace(sql)
+
 
 def test_shell_tracer_defaults():
     st = ShellTracer()

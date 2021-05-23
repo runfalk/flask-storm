@@ -48,10 +48,8 @@ def test_get_binds(app, flask_storm):
 
     bind_uri = memory_uri + "?extra_param"
     app.config["STORM_BINDS"] = {"extra": bind_uri}
-    assert flask_storm.get_binds() == {
-        None: memory_uri,
-        "extra": bind_uri
-    }
+    assert flask_storm.get_binds() == {None: memory_uri, "extra": bind_uri}
+
 
 @require("app_context")
 def test_none_in_binds(app, flask_storm):
@@ -85,9 +83,7 @@ def test_connect_binds(app, flask_storm):
     # Remove configuration key for test
     memory_uri = app.config.pop("STORM_DATABASE_URI")
 
-    app.config["STORM_BINDS"] = {
-        "memory": memory_uri
-    }
+    app.config["STORM_BINDS"] = {"memory": memory_uri}
 
     with pytest.raises(RuntimeError):
         flask_storm.connect()
@@ -115,10 +111,9 @@ def test_teardown(app, flask_storm):
         # Make sure store was closed after application context teardown
         assert mock.called
 
+
 def test_teardown_binds(app, flask_storm):
-    app.config["STORM_BINDS"] = {
-        "extra": app.config["STORM_DATABASE_URI"]
-    }
+    app.config["STORM_BINDS"] = {"extra": app.config["STORM_DATABASE_URI"]}
 
     ctx = app.app_context()
     ctx.push()
@@ -127,8 +122,7 @@ def test_teardown_binds(app, flask_storm):
     extra_store = flask_storm.get_store("extra")
 
     patch_real_store = patch.object(real_store, "close", wraps=real_store.close)
-    patch_extra_store = patch.object(
-        extra_store, "close", wraps=extra_store.close)
+    patch_extra_store = patch.object(extra_store, "close", wraps=extra_store.close)
     with patch_real_store as store_mock, patch_extra_store as extra_mock:
         # Assert teardown is not called before application context is gone
         assert not store_mock.called

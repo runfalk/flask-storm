@@ -13,17 +13,21 @@ class RstPreProcessor(object):
 
     def add_block(self, block, callback=None):
         if callback is None:
+
             def wrapper(callback):
                 self.add_block(block, callback)
                 return callback
+
             return wrapper
         self.blocks[block] = callback
 
     def add_role(self, role, callback=None):
         if callback is None:
+
             def wrapper(callback):
                 self.add_role(role, callback)
                 return callback
+
             return wrapper
         self.roles[role] = callback
 
@@ -39,17 +43,16 @@ class RstPreProcessor(object):
             match.group("block"),
             match.group("args"),
             match.group("extra"),
-            match.group("content"))
+            match.group("content"),
+        )
 
     def _role_dispatch(self, match):
         if match.group(1) not in self.roles:
             return match.group(0)
 
         return self.roles[match.group("role")](
-            self,
-            match.group("role"),
-            match.group("args"),
-            match.group("content"))
+            self, match.group("role"), match.group("args"), match.group("content")
+        )
 
     def process(self, text):
         # Process blocks
@@ -58,7 +61,8 @@ class RstPreProcessor(object):
             "\s+(?P<args>[^\n]+)(?:\n\n?(?P<content>.*?)\n\n(?=\S))?",
             self._block_dispatch,
             text,
-            flags=re.DOTALL)
+            flags=re.DOTALL,
+        )
 
         # Process roles
         text = re.sub(
@@ -66,7 +70,8 @@ class RstPreProcessor(object):
             "`(?P<content>[^`]*)`",
             self._role_dispatch,
             text,
-            flags=re.MULTILINE)
+            flags=re.MULTILINE,
+        )
 
         # Run replaces
         for search, replacement in self.replaces.items():
@@ -76,6 +81,7 @@ class RstPreProcessor(object):
 
 
 rst_pre_processor = RstPreProcessor()
+
 
 @rst_pre_processor.add_role("class")
 @rst_pre_processor.add_role("attr")
@@ -123,6 +129,8 @@ if __name__ == "__main__":
         ],
         extras_require={
             "dev": [
+                # Black is only supported on modern Python versions
+                "black;python_version>='3.6'",
                 "mock",
                 "pytest>=3",
                 "pytest-cov",

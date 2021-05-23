@@ -2,11 +2,24 @@ name: CI
 on: [push]
 
 jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools
+          pip install black
+      - name: Check codestyle
+        run: black --check flask_storm/ tests/ setup.py
+
   build:
     runs-on: ubuntu-20.04
     strategy:
-      # You can use PyPy versions in python-version.
-      # For example, pypy2 and pypy3
       matrix:
         python-version: [2.7, 3.6, 3.7, 3.8, 3.9]
         storm-package:
@@ -19,7 +32,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      # You can test your matrix by printing the current Python version
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools

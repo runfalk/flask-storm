@@ -8,6 +8,7 @@ except ImportError:  # storm < 0.21
     class ConnectionWrapper(object):
         pass
 
+
 try:
     import sqlparse
 except ImportError:
@@ -105,7 +106,8 @@ def format(statement):
         identifier_case="lower",
         reindent=True,
         indent_tabs=False,
-        indent_width=4)
+        indent_width=4,
+    )
 
 
 def _color_token(token):

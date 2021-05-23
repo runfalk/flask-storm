@@ -1,5 +1,6 @@
 import pytest
 
+
 def remove_whitespace():
     assert pytest.helpers.remove_whitespace("foo  bar") == "foobar"
     assert pytest.helpers.remove_whitespace("foo\t\tbar") == "foobar"

@@ -70,8 +70,7 @@ class DebugTracer(object):
     def connection_raw_execute(self, connection, raw_cursor, statement, params):
         self.threadinfo.start_time = datetime.now()
 
-    def connection_raw_execute_success(
-            self, connection, raw_cursor, statement, params):
+    def connection_raw_execute_success(self, connection, raw_cursor, statement, params):
 
         ctx = _app_ctx_stack.top
         if ctx is None:
@@ -80,19 +79,22 @@ class DebugTracer(object):
         if not hasattr(ctx, "storm_debug_queries"):
             ctx.storm_debug_queries = []
 
-        ctx.storm_debug_queries.append(DebugQuery(
-            statement,
-            params,
-            getattr(self.threadinfo, "start_time"),
-            datetime.now()))
+        ctx.storm_debug_queries.append(
+            DebugQuery(
+                statement,
+                params,
+                getattr(self.threadinfo, "start_time"),
+                datetime.now(),
+            )
+        )
 
         # Remove start time to prevent leakage across queries
         delattr(self.threadinfo, "start_time")
 
     def connection_raw_execute_error(
-            self, connection, raw_cursor, statement, params, error):
-        self.connection_raw_execute_success(
-            connection, raw_cursor, statement, params)
+        self, connection, raw_cursor, statement, params, error
+    ):
+        self.connection_raw_execute_success(connection, raw_cursor, statement, params)
 
     def __enter__(self):
         install_tracer(self)
@@ -143,8 +145,7 @@ class ShellTracer(object):
         if not self.threadinfo.active:
             return
 
-        self.file.write(
-            u"{};\n".format(color_sql(msg) if self.use_color else msg))
+        self.file.write(u"{};\n".format(color_sql(msg) if self.use_color else msg))
 
     def _log_result(self, success):
         if not self.threadinfo.active:
@@ -152,11 +153,10 @@ class ShellTracer(object):
 
         time = self.threadinfo.end_time - self.threadinfo.start_time
         msg = u"-- {result} in {time} ms".format(
-            result="SUCCESS" if success else "FAILURE",
-            time=time.total_seconds() * 1000)
+            result="SUCCESS" if success else "FAILURE", time=time.total_seconds() * 1000
+        )
 
-        self.file.write(u"{}\n".format(
-            colored(msg, 244) if self.use_color else msg))
+        self.file.write(u"{}\n".format(colored(msg, 244) if self.use_color else msg))
 
     def connection_raw_execute(self, connection, raw_cursor, statement, params):
         # Start timer after log printing since it may delay query execution and
@@ -166,16 +166,17 @@ class ShellTracer(object):
         if sqlparse is None:
             self._log(u"{}\n{!r}".format(statement, params))
         else:
-            self._log(format_sql(
-                replace_placeholders(statement, params, Adapter(connection))))
+            self._log(
+                format_sql(replace_placeholders(statement, params, Adapter(connection)))
+            )
 
-    def connection_raw_execute_success(
-            self, connection, raw_cursor, statement, params):
+    def connection_raw_execute_success(self, connection, raw_cursor, statement, params):
         self.threadinfo.end_time = datetime.now()
         self._log_result(True)
 
     def connection_raw_execute_error(
-            self, connection, raw_cursor, statement, params, error):
+        self, connection, raw_cursor, statement, params, error
+    ):
         self.threadinfo.end_time = datetime.now()
         self._log_result(False)
 
@@ -225,8 +226,9 @@ class RequestTracer(ShellTracer):
 
     def _get_request_line(self, request):
         template = (
-            '{ip} - - [{timestamp:%d/%b/%Y %H:%M:%S}] '
-            '"{method} {path} {version}" SQL -\n')
+            "{ip} - - [{timestamp:%d/%b/%Y %H:%M:%S}] "
+            '"{method} {path} {version}" SQL -\n'
+        )
 
         full_path = request.path
         if request.args:
@@ -237,7 +239,8 @@ class RequestTracer(ShellTracer):
             timestamp=datetime.now(),
             method=request.method,
             path=full_path,
-            version=request.environ.get("SERVER_PROTOCOL"))
+            version=request.environ.get("SERVER_PROTOCOL"),
+        )
 
     def _log(self, msg):
         if has_request_context():

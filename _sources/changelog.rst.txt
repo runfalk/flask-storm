@@ -5,12 +5,21 @@ explicitly stated, changes are made by
 `Andreas Runfalk <https://github.com/runfalk>`_.
 
 
-Version 0.3.0
+Version 1.0.0
 -------------
-Released on <unreleased>
+Released on 23rd May 2021
 
 - Dropped support for Python 3.3
-- Support Storm 0.21 which was recently released
+- Dropped support for Python 3.4
+- Dropped support for Python 3.5
+- Updated documentation to work with newer Sphinx versions
+- Support upstream Storm 0.21 or newer (thank you
+  `Colin Watson <https://github.com/cjwatson>`_)
+- Fixed broken placeholder replacement when using SQL statement printing in
+  Python 3 (thank you `Colin Watson <https://github.com/cjwatson>`_)
+
+Note that dropped Python versions may still work, but that's accidental rather
+than intentional.
 
 
 Version 0.2.0

@@ -26,7 +26,7 @@ def flask_storm(app):
     return flask_storm
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def app_context(app):
     with app.app_context() as ctx:
         yield ctx

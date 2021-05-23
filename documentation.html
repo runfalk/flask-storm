@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Documentation &#8212; Flask-Storm 0.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API documentation" href="api.html" />
+    <link rel="prev" title="Flask-Storm" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h1>
+<p>asdfasdfasfdf</p>
+<section id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<p>This will be a quick example of how to use Flask-Storm to create a REST API endpoint for a list of messages. For the full example code, see <a class="reference internal" href="#full-example-py">Full example.py</a>.</p>
+<section id="imports">
+<h3>Imports<a class="headerlink" href="#imports" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># example.py</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span>
+<span class="hll"><span class="kn">from</span> <span class="nn">flask_storm</span> <span class="kn">import</span> <span class="n">FlaskStorm</span><span class="p">,</span> <span class="n">store</span>
+</span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
+<span class="kn">from</span> <span class="nn">storm.locals</span> <span class="kn">import</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Unicode</span>
+</pre></div>
+</div>
+<p>To get a minimal application running there are a few needed imports. The only noteworthy thing here is the <code class="xref py py-attr docutils literal notranslate"><span class="pre">store</span></code> context local. For a primer on context locals see the <a class="reference external" href="http://flask.pocoo.org/docs/0.11/appcontext/">flask documentation</a>. This variable is a bit magic, and works just like the built-in <a class="reference external" href="http://flask.pocoo.org/docs/0.11/api/#flask.g">g</a>.</p>
+</section>
+<section id="application-setup">
+<h3>Application setup<a class="headerlink" href="#application-setup" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="s2">&quot;example&quot;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;STORM_DATABASE_URI&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sqlite:///test.db&quot;</span>
+
+<span class="n">flask_storm</span> <span class="o">=</span> <span class="n">FlaskStorm</span><span class="p">()</span>
+<span class="n">flask_storm</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Flask-Storm needs the <code class="docutils literal notranslate"><span class="pre">STORM_DATABASE_URI</span></code> to know which database to connect to. The format is described in the <a class="reference external" href="https://storm.canonical.com/Manual#The_create_database.28.29_function">official documentation</a> for Storm. It does not matter when the configuration variable is set, as long as it is done before using the <code class="xref py py-attr docutils literal notranslate"><span class="pre">store</span></code> context local. Flask-Storm is bound to a Flask application by using <a class="reference internal" href="api.html#flask_storm.FlaskStorm.init_app" title="flask_storm.FlaskStorm.init_app"><code class="xref py py-meth docutils literal notranslate"><span class="pre">init_app()</span></code></a>. One instane of <a class="reference internal" href="api.html#flask_storm.FlaskStorm" title="flask_storm.FlaskStorm"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskStorm</span></code></a> can be bound to multiple applications at once. One application can however only be bound to a single <a class="reference internal" href="api.html#flask_storm.FlaskStorm" title="flask_storm.FlaskStorm"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskStorm</span></code></a> instance.</p>
+</section>
+<section id="declaring-a-model">
+<h3>Declaring a model<a class="headerlink" href="#declaring-a-model" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">__storm_table__</span> <span class="o">=</span> <span class="s2">&quot;posts&quot;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="n">primary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+</pre></div>
+</div>
+<p>This is how a model is declared in Storm. In this case a Post has an integer <code class="docutils literal notranslate"><span class="pre">id</span></code> column as primary key, and two Unicode text columns; <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">text</span></code>. The table <code class="docutils literal notranslate"><span class="pre">posts</span></code> is declared using a special dunderscore <code class="docutils literal notranslate"><span class="pre">__storm_table__</span></code>.</p>
+</section>
+<section id="initializing-the-database">
+<h3>Initializing the database<a class="headerlink" href="#initializing-the-database" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">initdb</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Create schema and fill database with 15 sample posts by random authors&quot;&quot;&quot;</span>
+
+    <span class="n">store</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;DROP TABLE IF EXISTS posts&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">store</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        CREATE TABLE posts(</span>
+<span class="s2">            id    INTEGER PRIMARY KEY,</span>
+<span class="s2">            name  VARCHAR,</span>
+<span class="s2">            text  VARCHAR</span>
+<span class="s2">        )</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="sa">u</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span>
+        <span class="sa">u</span><span class="s2">&quot;Bob&quot;</span><span class="p">,</span>
+        <span class="sa">u</span><span class="s2">&quot;Eve&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span>
+        <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Post</span><span class="p">(</span><span class="n">choice</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="sa">u</span><span class="s2">&quot;Post #</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span>
+
+    <span class="n">store</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Starting with Flask version 0.11 there is a default <a class="reference external" href="http://flask.pocoo.org/docs/0.11/cli/">command line interface</a> that one can hook into. To create all tables and fill them with sample data, it is just a matter of running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">FLASK_APP</span><span class="o">=</span>example.py flask initdb
+</pre></div>
+</div>
+<p>The command will create <code class="docutils literal notranslate"><span class="pre">test.db</span></code> with the schema and data. This is the first use of an actual connection to the database. Note that there is no need to connect or close the store. This is handled automatically by Flask-Storm. A connection is never opened until the <code class="xref py py-attr docutils literal notranslate"><span class="pre">store</span></code> context local is accessed, and remains open until the application context is torn down.</p>
+</section>
+<section id="serving-requests">
+<h3>Serving requests<a class="headerlink" href="#serving-requests" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Return the 10 latest posts in JSON format&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">([{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">post</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">post</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">post</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+    <span class="p">}</span> <span class="k">for</span> <span class="n">post</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">Post</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Desc</span><span class="p">(</span><span class="n">Post</span><span class="o">.</span><span class="n">id</span><span class="p">))</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>The route serves a JSON array response containing the last 10 posts. In this case it is post 6 through 15.</p>
+<p>Now it is just a matter of running the application. This is easily done using the Flask command line interface:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">FLASK_APP</span><span class="o">=</span>example.py flask run
+</pre></div>
+</div>
+<p>This will, if there are no errors, serve the application on <a class="reference external" href="http://localhost:5000/">http://localhost:5000/</a>. Open this page in a web-browser to see the JSON data.</p>
+</section>
+</section>
+<section id="setup-and-tear-down-procedure">
+<h2>Setup and tear down procedure<a class="headerlink" href="#setup-and-tear-down-procedure" title="Permalink to this headline">¶</a></h2>
+<p>To prevent unnecessary overhead, database connections are created on demand when used within the <a class="reference external" href="http://flask.pocoo.org/docs/0.11/appcontext/">application context</a>. The same connection gets reused, and remains open, until the application context is torn down.</p>
+<p>This means the only thing required to use the <code class="xref py py-attr docutils literal notranslate"><span class="pre">store</span></code> context local is a configured application context.</p>
+</section>
+<section id="configuration-options">
+<h2>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h2>
+<p>This is the full list of configuration options for Flask Storm.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">STORM_DATABASE_URI</span></code></dt><dd><p>URI for the default database to connect to. This has the same format as the argument to Storm’s <code class="docutils literal notranslate"><span class="pre">create_database</span></code> as defined in the <a class="reference external" href="https://storm.canonical.com/Manual#The_create_database.28.29_function">official documentation</a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">STORM_BINDS</span></code></dt><dd><p>A dictionary of Storm URIs that Flask Storm can connect to. A bind is defined as an arbitrary key, used to identify the bind, and a URI for the database. See <a class="reference internal" href="#using-with-multiple-stores">Using with multiple Stores</a> for an in-depth explaination.</p>
+</dd>
+</dl>
+</section>
+<section id="using-with-flask-cli">
+<h2>Using with Flask CLI<a class="headerlink" href="#using-with-flask-cli" title="Permalink to this headline">¶</a></h2>
+<p>When using <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">shell</span></code>, Flask Storm will automatically provide a refence to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">store</span></code> context local. Flask Storm also sets up debug output of the SQL statements created by Storm. This makes <code class="docutils literal notranslate"><span class="pre">flask</span> <span class="pre">shell</span></code> a good testing environment for building complex queries with Storm.</p>
+<p>To make things more convenient it is recommended to provide model objects directly to the shell context. This is done easily by adding them using a shell context processor.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">storm.locals</span> <span class="kn">import</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Unicode</span>
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">__storm_table__</span> <span class="o">=</span> <span class="s2">&quot;users&quot;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="n">primary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="s2">&quot;example&quot;</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">shell_context_processor</span>
+<span class="k">def</span> <span class="nf">shell_context</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;User&quot;</span><span class="p">:</span> <span class="n">User</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>This example makes automatically makes <code class="docutils literal notranslate"><span class="pre">User</span></code> available in the shell environment.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is possible to disable SQL statement printing by calling stop on the tracer.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_storm_tracer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To disable color printing, reset the <code class="docutils literal notranslate"><span class="pre">fancy</span></code> flag:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_storm_tracer</span><span class="o">.</span><span class="n">fancy</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="using-with-multiple-stores">
+<h2>Using with multiple Stores<a class="headerlink" href="#using-with-multiple-stores" title="Permalink to this headline">¶</a></h2>
+<p>To interface with multiple Stores simultaneously binds exist. Apart from the default database, declared in <code class="docutils literal notranslate"><span class="pre">STORM_DATABASE_URI</span></code>, an arbitrary number of extra databases can be declared in <code class="docutils literal notranslate"><span class="pre">STORM_BINDS</span></code>. A bind declaration may look something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">STORM_BINDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;sqlite://:memory:&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The key <code class="docutils literal notranslate"><span class="pre">extra</span></code> is used to reference the bind, and the URI is used when connecting to the database. To make binds as easy to use as the normal <code class="xref py py-attr docutils literal notranslate"><span class="pre">store</span></code> context local it is possible to create context locals for every bind, using <a class="reference internal" href="api.html#flask_storm.create_context_local" title="flask_storm.create_context_local"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_context_local()</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the same key as when declaring the bind. In this case &quot;extra&quot;</span>
+<span class="n">extra_store</span> <span class="o">=</span> <span class="n">create_context_local</span><span class="p">(</span><span class="s2">&quot;extra&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">extra_store</span></code> can now be used just like <code class="xref py py-attr docutils literal notranslate"><span class="pre">store</span></code> as long as an application context is available. Just like the default store, all binds are automatically closed on application context teardown.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Declare extra bind context locals in a separate Python file that can be imported.</p>
+</div>
+</section>
+<section id="full-example-py">
+<h2>Full example.py<a class="headerlink" href="#full-example-py" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># example.py</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span>
+<span class="kn">from</span> <span class="nn">flask_storm</span> <span class="kn">import</span> <span class="n">FlaskStorm</span><span class="p">,</span> <span class="n">store</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
+<span class="kn">from</span> <span class="nn">storm.locals</span> <span class="kn">import</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Unicode</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="s2">&quot;example&quot;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;STORM_DATABASE_URI&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sqlite:///test.db&quot;</span>
+
+<span class="n">flask_storm</span> <span class="o">=</span> <span class="n">FlaskStorm</span><span class="p">()</span>
+<span class="n">flask_storm</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">__storm_table__</span> <span class="o">=</span> <span class="s2">&quot;posts&quot;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="n">primary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">Unicode</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">initdb</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Create schema and fill database with 15 sample posts by random authors&quot;&quot;&quot;</span>
+
+    <span class="n">store</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;DROP TABLE IF EXISTS posts&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">store</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        CREATE TABLE posts(</span>
+<span class="s2">            id    INTEGER PRIMARY KEY,</span>
+<span class="s2">            name  VARCHAR,</span>
+<span class="s2">            text  VARCHAR</span>
+<span class="s2">        )</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="sa">u</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span>
+        <span class="sa">u</span><span class="s2">&quot;Bob&quot;</span><span class="p">,</span>
+        <span class="sa">u</span><span class="s2">&quot;Eve&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span>
+        <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Post</span><span class="p">(</span><span class="n">choice</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="sa">u</span><span class="s2">&quot;Post #</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span>
+
+    <span class="n">store</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Return the 10 latest posts in JSON format&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">([{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">post</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">post</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">post</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+    <span class="p">}</span> <span class="k">for</span> <span class="n">post</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">Post</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Desc</span><span class="p">(</span><span class="n">Post</span><span class="o">.</span><span class="n">id</span><span class="p">))</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">)])</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Flask-Storm</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setup-and-tear-down-procedure">Setup and tear down procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-options">Configuration options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-with-flask-cli">Using with Flask CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-with-multiple-stores">Using with multiple Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#full-example-py">Full example.py</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Flask-Storm</a></li>
+      <li>Next: <a href="api.html" title="next chapter">API documentation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Andreas Runfalk.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/documentation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

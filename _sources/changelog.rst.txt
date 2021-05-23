@@ -17,6 +17,8 @@ Released on 23rd May 2021
   `Colin Watson <https://github.com/cjwatson>`_)
 - Fixed broken placeholder replacement when using SQL statement printing in
   Python 3 (thank you `Colin Watson <https://github.com/cjwatson>`_)
+- Fixed problem where ``fancy`` would always be set to ``False`` regardless of
+  the provided value when it was specified to a tracer.
 
 Note that dropped Python versions may still work, but that's accidental rather
 than intentional.

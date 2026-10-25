@@ -144,3 +144,39 @@ def test_shell_context(app):
         assert "_store_tracer" in ctx
     finally:
         ctx["_store_tracer"].stop()
+
+
+def test_get_store_no_context(flask_storm):
+    assert flask_storm.get_store() is None
+
+
+def test_store_per_context(app, flask_storm):
+    with app.app_context():
+        first = flask_storm.store
+        assert flask_storm.store is first
+
+    with app.app_context():
+        second = flask_storm.store
+
+    assert second is not first
+
+
+def test_nested_context(app, flask_storm):
+    with app.app_context():
+        outer = flask_storm.store
+
+        inner_ctx = app.app_context()
+        inner_ctx.push()
+        inner = flask_storm.store
+        assert inner is not outer
+
+        with patch.object(outer, "close", wraps=outer.close) as outer_close:
+            with patch.object(inner, "close", wraps=inner.close) as inner_close:
+                inner_ctx.pop()
+
+                # Only the inner context's store is closed by its teardown
+                assert inner_close.called
+                assert not outer_close.called
+
+        assert flask_storm.store is outer
+        assert outer.execute("SELECT 1").get_one() == (1,)

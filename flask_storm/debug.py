@@ -1,7 +1,7 @@
 import sys
 
 from datetime import datetime
-from flask import _app_ctx_stack, has_request_context, request
+from flask import g, has_app_context, has_request_context, request
 from operator import itemgetter
 from storm.tracer import install_tracer, remove_tracer
 from werkzeug.local import Local
@@ -71,14 +71,13 @@ class DebugTracer(object):
 
     def connection_raw_execute_success(self, connection, raw_cursor, statement, params):
 
-        ctx = _app_ctx_stack.top
-        if ctx is None:
+        if not has_app_context():
             return
 
-        if not hasattr(ctx, "storm_debug_queries"):
-            ctx.storm_debug_queries = []
+        if not hasattr(g, "_flask_storm_debug_queries"):
+            g._flask_storm_debug_queries = []
 
-        ctx.storm_debug_queries.append(
+        g._flask_storm_debug_queries.append(
             DebugQuery(
                 statement,
                 params,
@@ -108,7 +107,9 @@ def get_debug_queries():
     :class:`DebugTracer` under the current application context and thread.
     """
 
-    return getattr(_app_ctx_stack.top, "storm_debug_queries", [])
+    if not has_app_context():
+        return []
+    return getattr(g, "_flask_storm_debug_queries", [])
 
 
 class ShellTracer(object):

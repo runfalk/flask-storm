@@ -1,4 +1,4 @@
-from flask import current_app, _app_ctx_stack
+from flask import current_app, g, has_app_context
 from storm.locals import create_database, Store
 
 from .debug import ShellTracer
@@ -90,8 +90,7 @@ class FlaskStorm(object):
         # request
         @app.teardown_appcontext
         def close_store(response_or_exception):
-            ctx = _app_ctx_stack.top
-            for store in getattr(ctx, "storm_store", {}).values():
+            for store in getattr(g, "_flask_storm_stores", {}).values():
                 store.close()
 
     def get_binds(self):
@@ -151,14 +150,13 @@ class FlaskStorm(object):
                               context.
         """
 
-        ctx = _app_ctx_stack.top
-        if ctx is not None:
+        if has_app_context():
             # Create a dictionary where open store connections are stored
-            if not hasattr(ctx, "storm_store"):
-                ctx.storm_store = {}
+            if not hasattr(g, "_flask_storm_stores"):
+                g._flask_storm_stores = {}
 
-            if bind not in ctx.storm_store:
-                ctx.storm_store[bind] = self.connect(bind)
-            return ctx.storm_store[bind]
+            if bind not in g._flask_storm_stores:
+                g._flask_storm_stores[bind] = self.connect(bind)
+            return g._flask_storm_stores[bind]
 
     store = property(get_store)

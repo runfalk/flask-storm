@@ -124,7 +124,8 @@ if __name__ == "__main__":
         install_requires=[
             # We don't specify storm here since we might want storm-legacy
             # instead.
-            "Flask",
+            # flask.g is bound to the application context from 0.10
+            "Flask>=0.10",
         ],
         extras_require={
             "dev": [

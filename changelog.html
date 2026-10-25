@@ -72,13 +72,11 @@ upstream <code class="docutils literal notranslate"><span class="pre">storm</spa
 versions.</p></li>
 <li><p>Removed generated comments, unused settings, and redundant defaults from the
 Sphinx configuration.</p></li>
+<li><p>Removed the unused documentation Makefile and obsolete documentation build
+exclusions. Documentation is built directly with <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">sphinx-build</span></code>.</p></li>
 <li><p>Added integration tests for <code class="docutils literal notranslate"><span class="pre">example.py</span></code>, covering database initialization,
 resetting existing data, and returning the ten latest posts as JSON.</p></li>
 <li><p>Fix broken <code class="docutils literal notranslate"><span class="pre">example.py</span></code></p></li>
-<li><p>Updated <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code> for uv, pytest, Ruff, coverage reports, documentation
-builds, and SQLite sidecar files; removed obsolete tox and setuptools entries.</p></li>
-<li><p>Pinned GitHub Actions to their latest published releases, fixing CI and
-documentation deployment failures caused by missing major-version tags.</p></li>
 </ul>
 </section>
 <section id="version-1-0-0">

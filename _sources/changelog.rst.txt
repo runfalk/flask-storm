@@ -41,13 +41,11 @@ and drops support for old Flask versions.
   versions.
 - Removed generated comments, unused settings, and redundant defaults from the
   Sphinx configuration.
+- Removed the unused documentation Makefile and obsolete documentation build
+  exclusions. Documentation is built directly with ``uv run sphinx-build``.
 - Added integration tests for ``example.py``, covering database initialization,
   resetting existing data, and returning the ten latest posts as JSON.
 - Fix broken ``example.py``
-- Updated ``.gitignore`` for uv, pytest, Ruff, coverage reports, documentation
-  builds, and SQLite sidecar files; removed obsolete tox and setuptools entries.
-- Pinned GitHub Actions to their latest published releases, fixing CI and
-  documentation deployment failures caused by missing major-version tags.
 
 
 Version 1.0.0

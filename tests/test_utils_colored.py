@@ -1,6 +1,6 @@
-from flask_storm.utils import colored, has_color_support
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 
+from flask_storm.utils import colored, has_color_support
 
 fg42 = "\x1b[38;5;42m"
 bg69 = "\x1b[48;5;69m"

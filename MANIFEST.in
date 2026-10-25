@@ -1,9 +1,0 @@
-include LICENSE README.rst example.py
-
-graft tests
-graft doc
-
-global-exclude *.py[co]
-
-prune docs/_build
-prune docs/_themes

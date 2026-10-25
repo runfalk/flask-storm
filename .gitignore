@@ -1,14 +1,27 @@
-*.db
+# Python bytecode
+__pycache__/
 *.pyc
-*.pyo
-.cache/
+
+# Development environment and tool caches
+/.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Coverage data and reports
 .coverage
+.coverage.*
+/htmlcov/
+/coverage.xml
+
+# Package and documentation builds
+/dist/
+/doc-build/
+
+# Example SQLite database and sidecar files
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# macOS metadata
 .DS_Store
-.eggs/
-.tox/
-Flask_Storm.egg-info/
-venv/
-.venv/
-doc/_build/
-build/
-dist/

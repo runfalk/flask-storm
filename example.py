@@ -1,9 +1,9 @@
-# example.py
-from flask import Flask, jsonify
-from flask_storm import FlaskStorm, store
 from random import choice
-from storm.locals import Int, Unicode
 
+from flask import Flask, jsonify
+from storm.locals import Desc, Int, Unicode
+
+from flask_storm import FlaskStorm, store
 
 app = Flask("example")
 app.config["STORM_DATABASE_URI"] = "sqlite:///test.db"
@@ -12,7 +12,7 @@ flask_storm = FlaskStorm()
 flask_storm.init_app(app)
 
 
-class Post(object):
+class Post:
     __storm_table__ = "posts"
 
     id = Int(primary=True)
@@ -41,13 +41,13 @@ def initdb():
     """)
 
     names = [
-        u"Alice",
-        u"Bob",
-        u"Eve",
+        "Alice",
+        "Bob",
+        "Eve",
     ]
 
     for i in range(1, 16):
-        store.add(Post(choice(names), u"Post #{}".format(i)))
+        store.add(Post(choice(names), f"Post #{i}"))
 
     store.commit()
 
@@ -56,8 +56,13 @@ def initdb():
 def index():
     """Return the 10 latest posts in JSON format"""
 
-    return jsonify([{
-        "id": post.id,
-        "name": post.name,
-        "text": post.text,
-    } for post in store.find(Post).order_by(Desc(Post.id)).config(limit=10)])
+    return jsonify(
+        [
+            {
+                "id": post.id,
+                "name": post.name,
+                "text": post.text,
+            }
+            for post in store.find(Post).order_by(Desc(Post.id)).config(limit=10)
+        ]
+    )

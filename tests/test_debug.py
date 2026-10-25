@@ -1,11 +1,14 @@
-import pytest
 import sys
-
 from datetime import datetime, timedelta
-from flask_storm import store, FlaskStorm
-from flask_storm.debug import DebugTracer, get_debug_queries, DebugQuery, ShellTracer
-from mock import MagicMock, patch
 from threading import Thread
+from unittest.mock import MagicMock, patch
+
+import pytest
+from flask import g
+from storm.exceptions import OperationalError
+
+from flask_storm import FlaskStorm, store
+from flask_storm.debug import DebugQuery, DebugTracer, ShellTracer, get_debug_queries
 
 try:
     from io import StringIO
@@ -18,12 +21,8 @@ try:
 except ImportError:
     sqlparse = None
 
-require_sqlparse = pytest.mark.skipif(not sqlparse, reason="requires sqlparse")
 
-require = pytest.mark.usefixtures
-
-
-@require("app", "flask_storm", "app_context")
+@pytest.mark.usefixtures("app", "flask_storm", "app_context")
 def test_get_debug_queries():
     with DebugTracer():
         store.execute("SELECT 1")
@@ -63,7 +62,7 @@ def test_debug_query_keys():
     assert dq.duration == timedelta(seconds=1)
 
 
-@require("flask_storm")
+@pytest.mark.usefixtures("flask_storm")
 def test_tracer_thread_isolation(app, app_context):
     with DebugTracer():
         store.execute("SELECT 'this'")
@@ -88,6 +87,40 @@ def test_tracer_thread_isolation(app, app_context):
     assert queries[0].statement == "SELECT 'this'"
 
 
+@pytest.mark.usefixtures("flask_storm")
+def test_context_storage_does_not_clash_with_g(app):
+    with app.app_context() as ctx:
+        user_stores = object()
+        user_queries = object()
+        g.storm_store = user_stores
+        g.storm_debug_queries = user_queries
+
+        with DebugTracer():
+            store.execute("SELECT 1")
+
+        assert ctx.storm_store[None] is store._get_current_object()
+        assert ctx.storm_debug_queries is get_debug_queries()
+        assert [query.statement for query in get_debug_queries()] == ["SELECT 1"]
+        assert g.storm_store is user_stores
+        assert g.storm_debug_queries is user_queries
+
+
+@pytest.mark.usefixtures("flask_storm")
+def test_debug_queries_nested_contexts(app):
+    with DebugTracer(), app.app_context():
+        store.execute("SELECT 'outer'")
+        with app.app_context():
+            assert get_debug_queries() == []
+            store.execute("SELECT 'inner'")
+            assert [query.statement for query in get_debug_queries()] == [
+                "SELECT 'inner'"
+            ]
+
+        assert [query.statement for query in get_debug_queries()] == ["SELECT 'outer'"]
+
+    assert get_debug_queries() == []
+
+
 def test_get_debug_queries_no_context():
     assert get_debug_queries() == []
 
@@ -106,21 +139,18 @@ def test_query_without_context(app):
         store.close()
 
 
-@require("app_context", "flask_storm")
+@pytest.mark.usefixtures("app_context", "flask_storm")
 def test_query_error():
-    try:
-        with DebugTracer():
-            store.execute("SELECT !")
-    except Exception:
-        pass
+    with DebugTracer(), pytest.raises(OperationalError):
+        store.execute("SELECT !")
 
     queries = get_debug_queries()
     assert len(queries) == 1
     assert queries[0].statement == "SELECT !"
 
 
-@require_sqlparse
-@require("app_context", "flask_storm")
+@pytest.mark.skipif(not sqlparse, reason="requires sqlparse")
+@pytest.mark.usefixtures("app_context", "flask_storm")
 def test_shell_tracer():
     # Alias helper functions
     remove_whitespace = pytest.helpers.remove_whitespace
@@ -168,7 +198,7 @@ def test_shell_tracer_defaults():
     assert st.fancy
 
 
-@require("app_context", "flask_storm")
+@pytest.mark.usefixtures("app_context", "flask_storm")
 def test_shell_tracer_success():
     output = StringIO()
 
@@ -179,11 +209,11 @@ def test_shell_tracer_success():
     output.close()
 
 
-@require("app_context", "flask_storm")
+@pytest.mark.usefixtures("app_context", "flask_storm")
 def test_shell_tracer_failure():
     output = StringIO()
 
-    with ShellTracer(file=output, fancy=False), pytest.raises(Exception):
+    with ShellTracer(file=output, fancy=False), pytest.raises(OperationalError):
         store.execute("SELECT !")
 
     assert "FAILURE" in output.getvalue()

@@ -1,9 +1,10 @@
-import pytest
+from unittest.mock import patch
 
+import pytest
 from flask import Flask
-from flask_storm import FlaskStorm, find_flask_storm
-from mock import patch
 from storm.locals import Store
+
+from flask_storm import FlaskStorm, find_flask_storm
 
 require = pytest.mark.usefixtures
 

@@ -30,6 +30,8 @@ Access to the database is done using the `store` `application context local <htt
 Installation
 ------------
 
+Flask-Storm is tested Python 3.11 or newer.
+
 .. code-block:: bash
 
     pip install flask_storm[fancy]
@@ -49,28 +51,27 @@ Documentation is available on `<https://runfalk.github.io/flask-storm>`_
 Development
 -----------
 
+Install `uv <https://docs.astral.sh/uv/getting-started/installation/>`_ first.
+
 .. code-block:: bash
 
     # Setup environment
-    python3 -m venv --prompt=flask-storm .venv
-    source .venv/bin/activate
-    pip install --upgrade pip setuptools
-    pip install -e .[dev,fancy]
+    uv sync --extra fancy
 
     # Run test suite
-    pytest
-
-    # You can test all supported python versions in one go using tox
-    tox
+    uv run --extra fancy pytest
 
     # Build documentation
-    sphinx-build doc/ doc-build/
+    uv run sphinx-build doc/ doc-build/
 
     # Run auto formatter
-    black flask_storm/ tests/ setup.py
+    uv run ruff format flask_storm/ tests/
 
     # Run linter
-    flake8 flask_storm/ tests/ setup.py
+    uv run ruff check flask_storm/ tests/
+
+    # Build source and wheel distributions
+    uv build
 
 
 .. |test-status| image:: https://github.com/runfalk/flask-storm/actions/workflows/ci.yml/badge.svg
@@ -83,6 +84,5 @@ Development
     :scale: 100%
     :target: https://pypi.python.org/pypi/Flask-Storm/
 
-.. Include changelog on PyPI
-
-.. include:: doc/changelog.rst
+See the `changelog <https://runfalk.github.io/flask-storm/changelog.html>`_
+for release history.

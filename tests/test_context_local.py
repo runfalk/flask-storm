@@ -1,8 +1,7 @@
 import pytest
-
-from flask_storm import store, create_context_local
 from storm.locals import Store
 
+from flask_storm import create_context_local, store
 
 require = pytest.mark.usefixtures
 

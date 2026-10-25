@@ -5,7 +5,7 @@ try:
     from storm.database import ConnectionWrapper
 except ImportError:  # storm < 0.21
     # Only used for isinstance checks.
-    class ConnectionWrapper(object):
+    class ConnectionWrapper:
         pass
 
 
@@ -19,20 +19,18 @@ try:
 except ImportError:
     psycopg2_adapt = None
 
-from ._compat import base_string, long_int
 from .utils import colored
-
 
 __all__ = [
     "Adapter",
-    "default_adapter",
-    "replace_placeholders",
-    "format",
     "color",
+    "default_adapter",
+    "format",
+    "replace_placeholders",
 ]
 
 
-class Adapter(object):
+class Adapter:
     def __init__(self, conn=None):
         self._conn = conn
 
@@ -42,13 +40,13 @@ class Adapter(object):
             return "postgres"
 
     def _default_adapt(self, value):
-        if isinstance(value, base_string):
+        if isinstance(value, (str, bytes)):
             return "'{}'".format(value.replace("'", "''").replace("\\", "\\\\"))
         elif isinstance(value, bool):
             return "TRUE" if value else "FALSE"
         elif value is None:
             return "NULL"
-        elif isinstance(value, (int, long_int, float)):
+        elif isinstance(value, (int, float)):
             return str(value)
         else:
             return self._default_adapt(str(value))

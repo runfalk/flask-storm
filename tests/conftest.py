@@ -1,9 +1,9 @@
-import pytest
 import re
 
+import pytest
 from flask import Flask
-from flask_storm import FlaskStorm
 
+from flask_storm import FlaskStorm
 
 pytest_plugins = [
     "helpers_namespace",

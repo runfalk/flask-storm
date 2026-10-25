@@ -8,29 +8,27 @@ on:
 jobs:
   docs-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     name: Deploy docs
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v7.0.1
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@v10.3.2
         with:
-          python-version: 3.9
+          python-version: "3.15"
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools
-          pip install -e .[dev]
-          pip install storm>=0.25
+        run: uv sync --locked
       - name: Build documentation
         run: |
-          sphinx-build doc/ doc-build/
+          uv run --no-sync sphinx-build doc/ doc-build/
           touch doc-build/.nojekyll
       - name: Deploy
-        uses: crazy-max/ghaction-github-pages@v1
+        uses: crazy-max/ghaction-github-pages@v5.0.0
         with:
           allow_empty_commit: false
           build_dir: doc-build/
-          committer_name: Andreas Runfalk
-          committer_email: andreas@runfalk.se
+          committer: Andreas Runfalk <andreas@runfalk.se>
           keep_history: true
           jekyll: false
         env:

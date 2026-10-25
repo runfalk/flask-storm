@@ -1,13 +1,16 @@
 import sys
-
 from datetime import datetime
-from flask import _app_ctx_stack, has_request_context, request
 from operator import itemgetter
+
+from flask import has_app_context, has_request_context, request
+from flask.globals import app_ctx
 from storm.tracer import install_tracer, remove_tracer
 from werkzeug.local import Local
 
-from .sql import Adapter, replace_placeholders, format as format_sql, color as color_sql
-from .utils import has_color_support, colored
+from .sql import Adapter, replace_placeholders
+from .sql import color as color_sql
+from .sql import format as format_sql
+from .utils import colored, has_color_support
 
 try:
     import sqlparse
@@ -17,9 +20,9 @@ except ImportError:
 
 __all__ = [
     "DebugTracer",
-    "get_debug_queries",
     "RequestTracer",
     "ShellTracer",
+    "get_debug_queries",
 ]
 
 
@@ -40,7 +43,7 @@ class DebugQuery(tuple):
         return tuple.__new__(cls, [statement, params, start_time, end_time])
 
 
-class DebugTracer(object):
+class DebugTracer:
     """
     A tracer which stores all queries with parameters onto the current request
     context. Queries are accessible using :func:`get_debug_queries`. It is used
@@ -71,18 +74,17 @@ class DebugTracer(object):
 
     def connection_raw_execute_success(self, connection, raw_cursor, statement, params):
 
-        ctx = _app_ctx_stack.top
-        if ctx is None:
+        if not has_app_context():
             return
 
-        if not hasattr(ctx, "storm_debug_queries"):
-            ctx.storm_debug_queries = []
+        if not hasattr(app_ctx, "storm_debug_queries"):
+            app_ctx.storm_debug_queries = []
 
-        ctx.storm_debug_queries.append(
+        app_ctx.storm_debug_queries.append(
             DebugQuery(
                 statement,
                 params,
-                getattr(self.threadinfo, "start_time"),
+                self.threadinfo.start_time,
                 datetime.now(),
             )
         )
@@ -108,10 +110,12 @@ def get_debug_queries():
     :class:`DebugTracer` under the current application context and thread.
     """
 
-    return getattr(_app_ctx_stack.top, "storm_debug_queries", [])
+    if not has_app_context():
+        return []
+    return getattr(app_ctx, "storm_debug_queries", [])
 
 
-class ShellTracer(object):
+class ShellTracer:
     """
     :param file: File like object (has write method) where queries will be
                  logged to.
@@ -144,18 +148,18 @@ class ShellTracer(object):
         if not self.threadinfo.active:
             return
 
-        self.file.write(u"{};\n".format(color_sql(msg) if self.use_color else msg))
+        self.file.write(f"{color_sql(msg) if self.use_color else msg};\n")
 
     def _log_result(self, success):
         if not self.threadinfo.active:
             return
 
         time = self.threadinfo.end_time - self.threadinfo.start_time
-        msg = u"-- {result} in {time} ms".format(
+        msg = "-- {result} in {time} ms".format(
             result="SUCCESS" if success else "FAILURE", time=time.total_seconds() * 1000
         )
 
-        self.file.write(u"{}\n".format(colored(msg, 244) if self.use_color else msg))
+        self.file.write(f"{colored(msg, 244) if self.use_color else msg}\n")
 
     def connection_raw_execute(self, connection, raw_cursor, statement, params):
         # Start timer after log printing since it may delay query execution and
@@ -163,7 +167,7 @@ class ShellTracer(object):
         self.threadinfo.start_time = datetime.now()
 
         if sqlparse is None:
-            self._log(u"{}\n{!r}".format(statement, params))
+            self._log(f"{statement}\n{params!r}")
         else:
             self._log(
                 format_sql(replace_placeholders(statement, params, Adapter(connection)))
@@ -244,4 +248,4 @@ class RequestTracer(ShellTracer):
     def _log(self, msg):
         if has_request_context():
             self.file.write(self._get_request_line(request))
-        super(RequestTracer, self)._log(msg)
+        super()._log(msg)

@@ -1,8 +1,8 @@
 import os
 import sys
+from functools import partial
 
 from flask import current_app
-from functools import partial
 from werkzeug.local import LocalProxy
 
 
@@ -88,10 +88,10 @@ def colored(msg, color=None, background=None, bold=None, underline=None):
     prefix = ""
 
     if color is not None:
-        prefix += "\x1b[38;5;{}m".format(color)
+        prefix += f"\x1b[38;5;{color}m"
 
     if background is not None:
-        prefix += "\x1b[48;5;{}m".format(background)
+        prefix += f"\x1b[48;5;{background}m"
 
     if bold:
         prefix += "\x1b[1m"
@@ -103,4 +103,4 @@ def colored(msg, color=None, background=None, bold=None, underline=None):
     if prefix:
         suffix = "\x1b[0m"
 
-    return "{}{}{}".format(prefix, msg, suffix)
+    return f"{prefix}{msg}{suffix}"

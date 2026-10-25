@@ -1,21 +1,22 @@
-from logging import getLogger, NullHandler
+from importlib.metadata import version
+from logging import NullHandler, getLogger
 
-from .debug import DebugTracer, get_debug_queries, RequestTracer
+from .debug import DebugTracer, RequestTracer, get_debug_queries
 from .ext import FlaskStorm
-from .utils import find_flask_storm, create_context_local
+from .utils import create_context_local, find_flask_storm
 
 logger = getLogger(__name__)
 logger.addHandler(NullHandler())
 
-__version__ = "1.0.0"
+__version__ = version("Flask-Storm")
 
 __all__ = [
-    "create_context_local",
     "DebugTracer",
     "FlaskStorm",
+    "RequestTracer",
+    "create_context_local",
     "find_flask_storm",
     "get_debug_queries",
-    "RequestTracer",
     "store",
 ]
 
